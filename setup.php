@@ -4,7 +4,7 @@
  * Init the hooks of the plugins -Needed
  */
 
-define ("PLUGIN_SATISFACTION_VERSION", "1.5.2");
+define ("PLUGIN_SATISFACTION_VERSION", "1.5.3");
 
 // Minimal GLPI version, inclusive
 define('PLUGIN_SATISFACTION_MIN_GLPI', '9.5');
@@ -64,14 +64,17 @@ function plugin_init_satisfaction() {
  */
 function plugin_version_satisfaction() {
 
-   $author = "<a href='www.teclib.com'>TECLIB'</a>";
-   $author.= ", <a href='http://blogglpi.infotel.com/'>Infotel</a>";
+  $author = [
+    "<a href='http://intm.com/'>Group INTM</a>",
+    "<a href='http://blogglpi.infotel.com/'>Infotel</a>",
+    "<a href='https://www.teclib.com'>TECLIB'</a>"
+  ];
    return [
       'name'           => __("More satisfaction", 'satisfaction'),
       'version'        => PLUGIN_SATISFACTION_VERSION,
-      'author'         => $author,
+      'author'         => implode(', ', $author),
       'license'        => 'GPLv2+',
-      'homepage'       => 'https://github.com/pluginsGLPI/satisfaction',
+      'homepage'       => 'https://github.com/intmgroupe/satisfaction/tree/' . PLUGIN_SATISFACTION_VERSION,
       'requirements'   => [
          'glpi' => [
             'min' => PLUGIN_SATISFACTION_MIN_GLPI,
