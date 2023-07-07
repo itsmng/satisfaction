@@ -16,6 +16,7 @@ Features
   - Yes / No dropdown list.
   - Text box.
   - Note: It will be possible to configure the total number of stars.
+  - Numeric scale (0-10, NC): Features a radio button series from 0 to 10 with an extra NC.
 
 - This plugin will allow you to add all the questions configured in the plugin with the two questions of the GLPI core in the satisfaction survey.
 
@@ -48,6 +49,7 @@ Fonctionnalités
   - Liste déroulante Oui / Non.
   - Zone de texte.
   - Note : Il sera possible de configurer la nombre total d’étoiles.
+  - Échelle numérique (0-10, NC) : Dispose d'une série de boutons radio de 0 à 10 avec un NC supplémentaire.
 
 - Ce plugin va permettre d’ajouter l’ensemble des questions configurés dans le plugin avec les deux questions du cœur de GLPI.
 

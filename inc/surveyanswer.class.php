@@ -149,6 +149,7 @@ class PluginSatisfactionSurveyAnswer extends CommonDBChild {
          echo "</tr>";
       }
 
+      self::reloadJS();
       if ($preview) {
          echo "</table>";
          echo "</div>";
@@ -227,7 +228,7 @@ class PluginSatisfactionSurveyAnswer extends CommonDBChild {
             } else if ($question['type'] == PluginSatisfactionSurveyQuestion::NOTE) {
                $value = $question['default_value'];
             } else {
-               $value = 0;
+               $value = NULL;
             }
          }
          self::displayAnswer($question, $value);
@@ -235,6 +236,18 @@ class PluginSatisfactionSurveyAnswer extends CommonDBChild {
 
          echo "</div>";
       }
+      self::reloadJS();
+   }
+
+
+   /** 
+    * Launch the interaction implementation script
+    */
+   static function reloadJS() {
+     $js = <<<JAVASCRIPT
+registreNumericScale();
+JAVASCRIPT;
+     echo Html::scriptBlock($js);
    }
 
    /**
@@ -260,7 +273,41 @@ class PluginSatisfactionSurveyAnswer extends CommonDBChild {
             self::showStarAnswer($question, $value);
             break;
 
+         case PluginSatisfactionSurveyQuestion::NUMERIC_SCALE_WITH_NC :
+            self::showNumericScale($question, $value);
+            break;
+
       }
+   }
+
+   /**
+    * Numeric Scale wirh NC display
+    *
+    * @param     $question
+    * @param int $value
+    */
+   static function showNumericScale($question, $value = NULL) {
+      $questionsId = $question['id'];
+      $intValue = !empty($value) || $value == 0 ? intval($value) : $value;
+
+      $htmlElement = '<div class="numeric_scale_with_nc"'
+        . ($question['is_required'] ? ' required' : '' )
+        . '>';
+      for($i=0; $i<=10; $i++) {
+        $htmlElement .= '<label><input type="radio" name="answer[' . $questionsId
+          . ']"'
+          . ($intValue === $i ? ' checked' : '')
+          . ($question['is_required'] ? ' required' : '' )
+          .' value="' . $i .'" /><br />' . $i .'</label>';
+      }
+      $htmlElement .= '<label><input type="radio" name="answer[' . $questionsId
+        . ']"'
+        . ($intValue === -1 ? ' checked' : '')
+        . ($question['is_required'] ? ' required' : '' )
+        .' value="-1" /><br />NC</label>';
+      $htmlElement .= '</div';
+
+      echo $htmlElement;
    }
 
    /**
@@ -311,6 +358,7 @@ class PluginSatisfactionSurveyAnswer extends CommonDBChild {
             return Html::cleanPostForTextArea($value);
 
          case PluginSatisfactionSurveyQuestion::NOTE :
+         case PluginSatisfactionSurveyQuestion::NUMERIC_SCALE_WITH_NC :
             return $value;
       }
    }

@@ -46,6 +46,7 @@ function plugin_init_satisfaction() {
          if (isset($_SESSION['glpiactiveprofile']['interface'])
              && $_SESSION['glpiactiveprofile']['interface'] == 'central') {
             $PLUGIN_HOOKS['add_javascript']['satisfaction'] = ["satisfaction.js"];
+            $PLUGIN_HOOKS['add_css']['satisfaction'] = ["satisfaction.css"];
          }
          if (class_exists('PluginMydashboardMenu')) {
             $PLUGIN_HOOKS['mydashboard']['satisfaction'] = [PluginSatisfactionDashboard::class];

@@ -16,9 +16,10 @@ class PluginSatisfactionSurveyQuestion extends CommonDBChild {
    public static $itemtype = 'PluginSatisfactionSurvey';
    public static $items_id = 'plugin_satisfaction_surveys_id';
 
-   CONST YESNO    = 'yesno';
-   CONST TEXTAREA = 'textarea';
-   CONST NOTE     = 'note';
+   CONST YESNO                  = 'yesno';
+   CONST TEXTAREA               = 'textarea';
+   CONST NOTE                   = 'note';
+   CONST NUMERIC_SCALE_WITH_NC  = 'numeric_scale_with_nc';
 
    /**
     * Return the localized name of the current Type
@@ -328,10 +329,11 @@ class PluginSatisfactionSurveyQuestion extends CommonDBChild {
     * @return array
     */
    static function getQuestionTypeList() {
-      $array                 = [];
-      $array[self::YESNO]    = __('Yes') . '/' . __('No');
-      $array[self::TEXTAREA] = __('Text', 'satisfaction');
-      $array[self::NOTE]     = __('Note', 'satisfaction');
+      $array                                  = [];
+      $array[self::YESNO]                     = __('Yes') . '/' . __('No');
+      $array[self::TEXTAREA]                  = __('Text', 'satisfaction');
+      $array[self::NOTE]                      = __('Note', 'satisfaction');
+      $array[self::NUMERIC_SCALE_WITH_NC]     = __('Numeric scale (0-10, NC)', 'satisfaction');
       return $array;
    }
 
@@ -341,16 +343,7 @@ class PluginSatisfactionSurveyQuestion extends CommonDBChild {
     * @return array
     */
    static function getQuestionType($type) {
-      switch ($type) {
-         case self::YESNO :
-            return __('Yes') . '/' . __('No');
-         case self::TEXTAREA :
-            return __('Text', 'satisfaction');
-         case self::NOTE :
-            return __('Note', 'satisfaction');
-      }
-      return "";
-
+      return self::getQuestionTypeList()[$type];
    }
 
    /**

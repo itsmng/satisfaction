@@ -1,0 +1,16 @@
+.numeric_scale_with_nc {
+  border: 1px solid transparent !important;
+  padding: 2px 2px 6px 4px !important;
+  display: flex;
+}
+.numeric_scale_with_nc[required]:not([data-valid=true]) {
+    border: 1px rgba(255, 0, 0, 0.6) solid !important;
+    border-left-width: 3px !important;
+    padding-left: 2px !important;
+    box-shadow: none;
+    width: max-content;
+}
+.numeric_scale_with_nc > label {
+  min-width: 2em;
+  text-align: center;
+}
