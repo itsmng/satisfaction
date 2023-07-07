@@ -231,17 +231,13 @@ class PluginSatisfactionSurveyQuestion extends CommonDBChild {
       echo __('Note on', 'satisfaction');
       echo "</td>";
       echo "<td>";
-      Dropdown::showNumber('number', ['max'   => 10,
+      Dropdown::showNumber('maximun', ['max'   => 10,
                                       'min'   => 2,
-                                      'value' => $surveyquestion->fields['number'],
+                                      'value' => $surveyquestion->fields['maximun']?:10,
                                       'on_change' => "plugin_satisfaction_load_defaultvalue(\"" . Plugin::getWebDir('satisfaction') . "\", this.value);"]);
       echo "</td>";
 
-      if (!empty($surveyquestion->fields['number'])) {
-         $max_default_value = $surveyquestion->fields['number'];
-      } else {
-         $max_default_value = 2;
-      }
+      $max_default_value = $surveyquestion->fields['maximun']?:10;
 
       echo "<td>";
       echo __('Default value');

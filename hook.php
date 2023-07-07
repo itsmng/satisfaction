@@ -10,7 +10,7 @@ function plugin_satisfaction_install() {
    include_once(Plugin::getPhpDir('satisfaction')."/inc/notificationtargetticket.class.php");
 
    if (!$DB->tableExists("glpi_plugin_satisfaction_surveys")) {
-      $DB->runFile(Plugin::getPhpDir('satisfaction')."/install/sql/empty-1.5.0.sql");
+      $DB->runFile(Plugin::getPhpDir('satisfaction')."/install/sql/empty-1.5.3.sql");
 
    } else {
       if (!$DB->fieldExists("glpi_plugin_satisfaction_surveyquestions", "type")) {
@@ -33,6 +33,11 @@ function plugin_satisfaction_install() {
       //version 1.4.5
       if (!$DB->fieldExists("glpi_plugin_satisfaction_surveys", "reminders_days")) {
          $DB->runFile(Plugin::getPhpDir('satisfaction')."/install/sql/update-1.4.5.sql");
+      }
+      
+      //version 1.5.3
+      if (!$DB->fieldExists("glpi_plugin_satisfaction_surveyquestions", "is_required")) {
+         $DB->runFile(Plugin::getPhpDir('satisfaction')."/install/sql/update-1.5.3.sql");
       }
    }
 
