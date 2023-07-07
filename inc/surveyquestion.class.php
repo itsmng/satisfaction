@@ -333,7 +333,7 @@ class PluginSatisfactionSurveyQuestion extends CommonDBChild {
       $array[self::YESNO]                     = __('Yes') . '/' . __('No');
       $array[self::TEXTAREA]                  = __('Text', 'satisfaction');
       $array[self::NOTE]                      = __('Note', 'satisfaction');
-      $array[self::NUMERIC_SCALE_WITH_NC]     = __('Numeric scale (0-10, NC)', 'satisfaction');
+      $array[self::NUMERIC_SCALE_WITH_NC]     = __('Numeric scale', 'satisfaction');
       return $array;
    }
 

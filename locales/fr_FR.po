@@ -2,20 +2,21 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# 
+#
 # Translators:
 # Amandine Manceau, 2018
 # Mathieu Templier <mathieu.templier@infotel.com>, 2019
 # guillaume GUIBOUX <guillaume.guiboux@infotel.com>, 2019
 # Xavier CAILLAUD <thetsmr@gmail.com>, 2020
-# 
+# Henry GALVEZ <henry@alograg.me>, 2023
+#
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-04-28 08:52+0200\n"
-"PO-Revision-Date: 2018-03-14 08:28+0000\n"
+"PO-Revision-Date: 2023-07-20 10:31+0200\n"
 "Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2020\n"
 "Language-Team: French (France) (https://www.transifex.com/infotelGLPI/teams/84146/fr_FR/)\n"
 "MIME-Version: 1.0\n"
@@ -24,11 +25,11 @@ msgstr ""
 "Language: fr_FR\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: hook.php:93
+#: hook.php:99
 msgid "Ticket Satisfaction Reminder"
 msgstr "Rappel de satisfaction ticket"
 
-#: setup.php:62
+#: setup.php:74
 msgid "More satisfaction"
 msgstr "Plus de satisfaction"
 
@@ -119,7 +120,7 @@ msgid_plural "Answers"
 msgstr[0] "Réponse"
 msgstr[1] "Réponses"
 
-#: inc/surveyanswer.class.php:43
+#: inc/surveyanswer.class.php:45
 msgid "Preview"
 msgstr "Prévisualisation"
 
@@ -127,17 +128,22 @@ msgstr "Prévisualisation"
 msgid "Satisfaction"
 msgstr "Satisfaction"
 
+#: inc/surveyanswer.class.php:134 inc/surveyquestion.class.php:153
+#: inc/surveyquestion.class.php:257
+msgid "required"
+msgstr "obligatoire"
+
 #: inc/survey.class.php:223 inc/survey.class.php:249
 msgid "Error : only one survey is allowed by entity"
 msgstr "Erreur : un seul questionnaire par entité est autorisé"
 
-#: inc/surveyquestion.class.php:30
+#: inc/surveyquestion.class.php:31
 msgid "Question"
 msgid_plural "Questions"
 msgstr[0] "Question"
 msgstr[1] "Questions"
 
-#: inc/surveyquestion.class.php:105
+#: inc/surveyquestion.class.php:106
 msgid ""
 "You cannot edit the questions when answers exists for this survey. Disable "
 "this survey and create a new one !"
@@ -145,25 +151,33 @@ msgstr ""
 "Vous ne pouvez pas éditer les questions quand des réponses existent pour ce "
 "questionnaire. Désactivez ce questionnaire et créez en un nouveau !"
 
-#: inc/surveyquestion.class.php:125 inc/surveyquestion.class.php:195
+#: inc/surveyquestion.class.php:126 inc/surveyquestion.class.php:197
 msgid "Add a question"
 msgstr "Ajouter une question"
 
-#: inc/surveyquestion.class.php:133
+#: inc/surveyquestion.class.php:134
 msgid "No questions for this survey"
 msgstr "Pas de questions pour ce questionnaire"
 
-#: inc/surveyquestion.class.php:231
+#: inc/surveyquestion.class.php:233
 msgid "Note on"
 msgstr "Note sur"
 
-#: inc/surveyquestion.class.php:325 inc/surveyquestion.class.php:340
+#: inc/surveyquestion.class.php:322
+msgid "is required"
+msgstr "obligatoire"
+
+#: inc/surveyquestion.class.php:334
 msgid "Text"
 msgstr "Texte"
 
-#: inc/surveyquestion.class.php:326 inc/surveyquestion.class.php:342
+#: inc/surveyquestion.class.php:335
 msgid "Note"
 msgstr "Note"
+
+#: inc/surveyquestion.class.php:336
+msgid "Numeric scale"
+msgstr "Echelle de valeurs"
 
 #: inc/surveyreminder.class.php:45 inc/surveyreminder.class.php:65
 #: inc/surveyreminder.class.php:446

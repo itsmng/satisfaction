@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-07-20 14:55+0200\n"
+"POT-Creation-Date: 2023-07-20 10:31+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,11 +18,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: hook.php:93
+#: hook.php:99
 msgid "Ticket Satisfaction Reminder"
 msgstr ""
 
-#: setup.php:62
+#: setup.php:74
 msgid "More satisfaction"
 msgstr ""
 
@@ -113,48 +113,61 @@ msgid_plural "Answers"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/surveyanswer.class.php:43
+#: inc/surveyanswer.class.php:45
 msgid "Preview"
 msgstr ""
 
-#: inc/surveyanswer.class.php:116
+#: inc/surveyanswer.class.php:121
 msgid "Satisfaction"
+msgstr ""
+
+#: inc/surveyanswer.class.php:134 inc/surveyquestion.class.php:153
+#: inc/surveyquestion.class.php:257
+msgid "required"
 msgstr ""
 
 #: inc/survey.class.php:223 inc/survey.class.php:249
 msgid "Error : only one survey is allowed by entity"
 msgstr ""
 
-#: inc/surveyquestion.class.php:30
+#: inc/surveyquestion.class.php:31
 msgid "Question"
 msgid_plural "Questions"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/surveyquestion.class.php:105
+#: inc/surveyquestion.class.php:106
 msgid ""
 "You cannot edit the questions when answers exists for this survey. Disable "
 "this survey and create a new one !"
 msgstr ""
 
-#: inc/surveyquestion.class.php:125 inc/surveyquestion.class.php:195
+#: inc/surveyquestion.class.php:126 inc/surveyquestion.class.php:197
 msgid "Add a question"
 msgstr ""
 
-#: inc/surveyquestion.class.php:133
+#: inc/surveyquestion.class.php:134
 msgid "No questions for this survey"
 msgstr ""
 
-#: inc/surveyquestion.class.php:231
+#: inc/surveyquestion.class.php:233
 msgid "Note on"
 msgstr ""
 
-#: inc/surveyquestion.class.php:325 inc/surveyquestion.class.php:340
+#: inc/surveyquestion.class.php:322
+msgid "is required"
+msgstr ""
+
+#: inc/surveyquestion.class.php:334
 msgid "Text"
 msgstr ""
 
-#: inc/surveyquestion.class.php:326 inc/surveyquestion.class.php:342
+#: inc/surveyquestion.class.php:335
 msgid "Note"
+msgstr ""
+
+#: inc/surveyquestion.class.php:336
+msgid "Numeric scale"
 msgstr ""
 
 #: inc/surveyreminder.class.php:45 inc/surveyreminder.class.php:65
