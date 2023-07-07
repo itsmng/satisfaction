@@ -148,7 +148,8 @@ class PluginSatisfactionSurveyQuestion extends CommonDBChild {
             echo "<th width='10'>" . Html::getCheckAllAsCheckbox('mass' . __CLASS__ . $rand) . "</th>";
          }
          echo "<th>" . self::getTypeName(2) . "</th>";
-         echo "<th>" . __('Type') . "</th></tr>";
+         echo "<th>" . __('Type') . "</th>";
+         echo "<th>" . __('required', 'satisfaction') . "</th></tr>";
 
          foreach ($questions as $question) {
             if ($squestions_obj->getFromDB($question['id'])) {
@@ -250,6 +251,16 @@ class PluginSatisfactionSurveyQuestion extends CommonDBChild {
       echo "</td>";
       echo "</tr>";
 
+      echo "<tr class='tab_bg_1'>";
+      echo "<td>";
+      echo '<label for="is_required">' . __('required', 'satisfaction') . "</label>";
+      echo "</td>";
+      echo "<td>";
+      echo '<input type="hidden" name="is_required" value="0" />';
+      echo '<input type="checkbox" id="is_required" name="is_required"'. ($surveyquestion->fields['is_required'] ? ' checked' : '' ) .' value="1" />'. $surveyquestion->fields['is_required'];
+      echo "</td>";
+      echo "</tr>";
+
       echo "<tr>";
       echo "<td class='tab_bg_2 center' colspan='4'>";
       if ($ID <= 0) {
@@ -307,6 +318,7 @@ class PluginSatisfactionSurveyQuestion extends CommonDBChild {
 
       echo "<td class='left'>" . nl2br($name) . "</td>";
       echo "<td class='left'>" . self::getQuestionType($this->fields["type"]) . "</td>";
+      echo "<td class='left'>" . ($this->fields["is_required"] ? __('is required', 'satisfaction') : '') . "</td>";
       echo "</tr>";
    }
 

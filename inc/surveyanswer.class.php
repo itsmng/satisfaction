@@ -131,7 +131,7 @@ class PluginSatisfactionSurveyAnswer extends CommonDBChild {
             $name = PluginSatisfactionSurveyTranslation::getTranslation($question["plugin_satisfaction_surveys_id"], $question["id"]);
          }
 
-         echo "<td>" . nl2br($name) . "</td>";
+         echo "<td style='vertical-align: top'>" . nl2br($name) . ( $question['is_required'] ? ' <small>(' . __('required', 'satisfaction') . ')</small>': '') . "</td>";
          echo "<td>";
          if (isset($sanswer_obj->fields['answer'][$question['id']])) {
             $value = $sanswer_obj->fields['answer'][$question['id']];
@@ -141,7 +141,7 @@ class PluginSatisfactionSurveyAnswer extends CommonDBChild {
             } else if ($question['type'] == PluginSatisfactionSurveyQuestion::NOTE) {
                $value = $question['default_value'];
             } else {
-               $value = 0;
+               $value = NULL;
             }
          }
          self::displayAnswer($question, $value);
@@ -253,7 +253,7 @@ class PluginSatisfactionSurveyAnswer extends CommonDBChild {
 
          case PluginSatisfactionSurveyQuestion::TEXTAREA :
             $value = Html::cleanPostForTextArea($value);
-            echo "<textarea cols='60' rows='6' name='answer[$questions_id]' >" . $value . "</textarea>";
+            echo '<textarea cols="60" rows="6" name="answer[' . $questions_id . ']" ' . ($question['is_required']? ' required' : '') . '>' . $value . '</textarea>';
             break;
 
          case PluginSatisfactionSurveyQuestion::NOTE :
