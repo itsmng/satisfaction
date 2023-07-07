@@ -13,7 +13,7 @@ $survey = new PluginSatisfactionSurvey();
 if (isset($_POST["add"])) {
    $survey->check(-1, CREATE, $_POST);
    $survey->add($_POST);
-   Html::back();
+   $survey->redirectToList();
 
 } else if (isset($_POST["purge"])) {
    $survey->check($_POST['id'], PURGE);
