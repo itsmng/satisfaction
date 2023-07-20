@@ -124,7 +124,7 @@ msgstr[1] "Réponses"
 msgid "Preview"
 msgstr "Prévisualisation"
 
-#: inc/surveyanswer.class.php:116
+#: inc/surveyanswer.class.php:121
 msgid "Satisfaction"
 msgstr "Satisfaction"
 
@@ -159,23 +159,31 @@ msgstr "Ajouter une question"
 msgid "No questions for this survey"
 msgstr "Pas de questions pour ce questionnaire"
 
-#: inc/surveyquestion.class.php:233
+#: inc/surveyquestion.class.php:251
+msgid "Note minimum"
+msgstr "Note minimum"
+
+#: inc/surveyquestion.class.php:260
+msgid "Note maximum"
+msgstr "Note: maximum"
+
+#: inc/surveyquestion.class.php:272
 msgid "Note on"
 msgstr "Note sur"
 
-#: inc/surveyquestion.class.php:322
+#: inc/surveyquestion.class.php:362
 msgid "is required"
 msgstr "obligatoire"
 
-#: inc/surveyquestion.class.php:334
+#: inc/surveyquestion.class.php:374
 msgid "Text"
 msgstr "Texte"
 
-#: inc/surveyquestion.class.php:335
+#: inc/surveyquestion.class.php:375
 msgid "Note"
 msgstr "Note"
 
-#: inc/surveyquestion.class.php:336
+#: inc/surveyquestion.class.php:376
 msgid "Numeric scale"
 msgstr "Echelle de valeurs"
 

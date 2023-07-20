@@ -152,23 +152,31 @@ msgstr "Add a question"
 msgid "No questions for this survey"
 msgstr "No questions for this survey"
 
-#: inc/surveyquestion.class.php:233
+#: inc/surveyquestion.class.php:251
+msgid "Note minimum"
+msgstr "Note minimum"
+
+#: inc/surveyquestion.class.php:260
+msgid "Note maximum"
+msgstr "Note maximum"
+
+#: inc/surveyquestion.class.php:272
 msgid "Note on"
 msgstr "Note on"
 
-#: inc/surveyquestion.class.php:322
+#: inc/surveyquestion.class.php:362
 msgid "is required"
 msgstr "is required"
 
-#: inc/surveyquestion.class.php:334
+#: inc/surveyquestion.class.php:374
 msgid "Text"
 msgstr "Text"
 
-#: inc/surveyquestion.class.php:335
+#: inc/surveyquestion.class.php:375
 msgid "Note"
 msgstr "Note"
 
-#: inc/surveyquestion.class.php:336
+#: inc/surveyquestion.class.php:376
 msgid "Numeric scale"
 msgstr "Numeric scale"
 
