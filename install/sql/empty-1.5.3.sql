@@ -21,8 +21,9 @@ CREATE TABLE `glpi_plugin_satisfaction_surveyquestions` (
   `name` text collate utf8_unicode_ci default NULL,
   `type` varchar(255) collate utf8_unicode_ci default NULL,
   `comment` text collate utf8_unicode_ci default NULL,
-  `maximun` int(11) DEFAULT NULL,
-  `default_value` int(11) DEFAULT NULL,
+  `minimun` tinyint(1) DEFAULT NULL,
+  `maximun` tinyint(1) DEFAULT NULL,
+  `default_value` tinyint(1) DEFAULT NULL,
   `is_required` tinyint(1) NOT NULL default 0,
   PRIMARY KEY (`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;

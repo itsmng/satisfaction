@@ -213,22 +213,61 @@ class PluginSatisfactionSurveyQuestion extends CommonDBChild {
       echo "<td>";
       $array = self::getQuestionTypeList();
       Dropdown::showFromArray('type', $array, ['value'     => $surveyquestion->fields['type'],
-                                               'on_change' => "plugin_satisfaction_loadtype(this.value, \"" . self::NOTE . "\");"]);
+                                               'on_change' => "plugin_satisfaction_loadtype(this.value);"]);
 
-      $script = "function plugin_satisfaction_loadtype(val, note){";
-      $script .= "if(val == note) {
-                  $('#show_note').show();
-               } else {
-                  $('#show_note').hide();
-               }";
-      $script .= "};";
+      $NOTE = self::NOTE;
+      $NUMERIC_SCALE_WITH_NC = self::NUMERIC_SCALE_WITH_NC;
+      $script = <<<JAVASCRIPT
+function plugin_satisfaction_loadtype(val, note){
+  if(val == "$NOTE") {
+    $('#show_note').show();
+    $('#show_note select').prop('disabled', '');
+    $('#show_numeric_scale_with_nc').hide();
+    $('#show_show_numeric_scale_with_nc select').prop('disabled', 'disabled');
+  } else if(val == "$NUMERIC_SCALE_WITH_NC") {
+    $('#show_numeric_scale_with_nc').show();
+    $('#show_numeric_scale_with_nc select').prop('disabled', '');
+    $('#show_note').hide();
+    $('#show_note select').prop('disabled', 'disabled');
+  } else {
+    $('#show_numeric_scale_with_nc').hide();
+    $('#show_numeric_scale_with_nc select').prop('disabled', 'disabled');
+    $('#show_note').hide();
+    $('#show_note select').prop('disabled', 'disabled');
+  }
+};
+JAVASCRIPT;
 
       echo Html::scriptBlock($script);
-      $style = ($surveyquestion->fields['type'] == self::NOTE) ? "" : "style='display: none '";
+      $isNote = $surveyquestion->fields['type'] == self::NOTE;
+      $isNumeric = $surveyquestion->fields['type'] == self::NUMERIC_SCALE_WITH_NC;
+      $NoteStyle = $isNote ? "" : "style='display: none '";
+      $NumericStyle = $isNumeric ? "" : "style='display: none '";
       echo "</td>";
       echo "</tr>";
 
-      echo "<tr class='tab_bg_1' id='show_note' $style>";
+      echo "<tr class='tab_bg_1' id='show_numeric_scale_with_nc' $NumericStyle>";
+      echo "<td>";
+      echo __('Note minimun', 'satisfaction');
+      echo "</td>";
+      echo "<td>";
+      Dropdown::showNumber('minimun', ['max'   => 1,
+                                      'min'   => 0,
+                                      'value' => $surveyquestion->fields['minimun']?:0,
+                                      'specific_tags' => $isNumeric ? [] : ['disabled' => 'disabled']]);
+      echo "</td>";
+      echo "<td>";
+      echo __('Note maximun', 'satisfaction');
+      echo "</td>";
+      echo "<td>";
+      Dropdown::showNumber('maximun', ['max'   => 10,
+                                      'min'   => 2,
+                                      'value' => $surveyquestion->fields['maximun']?:10,
+                                      'specific_tags' => $isNumeric ? [] : ['disabled' => 'disabled']]);
+      echo "</td>";
+      echo "</tr>";
+
+      echo "<tr class='tab_bg_1' id='show_note' $NoteStyle>";
       echo "<td>";
       echo __('Note on', 'satisfaction');
       echo "</td>";
@@ -236,6 +275,7 @@ class PluginSatisfactionSurveyQuestion extends CommonDBChild {
       Dropdown::showNumber('maximun', ['max'   => 10,
                                       'min'   => 2,
                                       'value' => $surveyquestion->fields['maximun']?:10,
+                                      'specific_tags' => $isNote ? [] : ['disabled' => 'disabled'],
                                       'on_change' => "plugin_satisfaction_load_defaultvalue(\"" . Plugin::getWebDir('satisfaction') . "\", this.value);"]);
       echo "</td>";
 
@@ -247,8 +287,8 @@ class PluginSatisfactionSurveyQuestion extends CommonDBChild {
       echo "<td id='default_value'>";
       Dropdown::showNumber('default_value', ['max'   => $max_default_value,
                                       'min'   => 1,
+                                      'specific_tags' => $isNote ? [] : ['disabled' => 'disabled'],
                                       'value' => $surveyquestion->fields['default_value']]);
-
       echo "</td>";
       echo "</tr>";
 
@@ -258,7 +298,7 @@ class PluginSatisfactionSurveyQuestion extends CommonDBChild {
       echo "</td>";
       echo "<td>";
       echo '<input type="hidden" name="is_required" value="0" />';
-      echo '<input type="checkbox" id="is_required" name="is_required"'. ($surveyquestion->fields['is_required'] ? ' checked' : '' ) .' value="1" />'. $surveyquestion->fields['is_required'];
+      echo '<input type="checkbox" id="is_required" name="is_required"'. ($surveyquestion->fields['is_required'] ? ' checked' : '' ) .' value="1" />';
       echo "</td>";
       echo "</tr>";
 

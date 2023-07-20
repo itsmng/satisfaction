@@ -4,7 +4,7 @@
  * @param id
  */
 function plugin_satisfaction_load_defaultvalue(root_doc, default_value){
-    var value = $('input[name="default_value"]').val();
+    var value = $('input[name="default_value"]').val() || Math.floor((default_value/2).toFixed(0));
 
     if(value > default_value) {
         value = default_value;

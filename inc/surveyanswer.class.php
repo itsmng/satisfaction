@@ -288,7 +288,7 @@ JAVASCRIPT;
     */
    static function showNumericScale($question, $value = NULL) {
       $questionsId = $question['id'];
-      $intValue = !empty($value) || $value == 0 ? intval($value) : $value;
+      $intValue = (!empty($value) || $value == 0) && !is_null($value) ? intval($value) : $value;
 
       $htmlElement = '<div class="numeric_scale_with_nc"'
         . ($question['is_required'] ? ' required' : '' )
