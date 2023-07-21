@@ -22,13 +22,14 @@ jobs:
         run: |
           sudo apt-get install libxml-xpath-perl
           echo ::set-output name=version_itsmng::$(xpath -e '/root/versions/version[num="'${TAG_VALUE}'"]/compatibility/text()' "${GITHUB_NAME:-satisfaction}.xml")
-          rm -rf "${GITHUB_NAME:-satisfaction}.xml" tools wiki screenshots test .git .github ISSUE_TEMPLATE.md TODO.txt "${GITHUB_NAME:-satisfaction}.png" 
           echo ::set-output name=tag::${TAG_VALUE}
           echo ${{ steps.getxml.outputs.info }}
           IFS='.' read -ra version_parts <<< "${TAG_VALUE}"
           last_part=$(( ${version_parts[-1]} - 1 ))
-          prev_version="${version_parts[@]:0:${#version_parts[@]}-1}.$last_part"
-          echo ::set-output name=body::$(git log ${prev_version}..HEAD --pretty=format:"%s")
+          prev_version=$(echo "${version_parts[@]:0:${#version_parts[@]}-1}.$last_part" | tr ' ' '.')
+          bodyTXT=$(git log "$prev_version..HEAD" --pretty=format:"%s")
+          echo ::set-output name=body::${bodyTXT}
+          rm -rf "${GITHUB_NAME:-satisfaction}.xml" tools wiki screenshots test .git .github ISSUE_TEMPLATE.md TODO.txt "${GITHUB_NAME:-satisfaction}.png" 
           cd ..
           tar jcvf "itsmng-${GITHUB_NAME:-satisfaction}-${TAG_VALUE}.tar.bz2" "${GITHUB_NAME:-satisfaction}"
           ls -al
