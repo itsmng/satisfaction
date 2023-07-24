@@ -58,7 +58,7 @@ jobs:
           GITHUB_NAME: ${{ github.event.repository.name }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: /home/runner/work/${{ github.event.repository.name }}/${{ steps.build_.outputs.asset_file }}
+          asset_path: ./${{ steps.build_.outputs.asset_file }}
           asset_name: ${{ steps.build_.outputs.asset_file }} 
           asset_content_type: application/x-compressed-tar
 
