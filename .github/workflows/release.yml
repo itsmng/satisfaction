@@ -32,7 +32,8 @@ jobs:
           echo -e "Version ${TAG_VALUE} released for itsmng ${version_itsmng}\n" > RELEASE.md
           git log "${prev_version}..${TAG_VALUE}" --pretty=format:"- %s" >> RELEASE.md
           echo -e "\n\n**Full Changelog**:  https://github.com/${{ github.repository }}/compare/${prev_version}...${TAG_VALUE}" >> RELEASE.md
-          git archive --format=tar.gz --prefix=satisfaction/ -o "${asset}" HEAD
+          iconv -f US-ASCII -t UTF-8 -o RELEASE.md RELEASE.md
+          git archive --format=tar.gz --add-file=RELEASE.md --prefix=satisfaction/ -o "${asset}" HEAD
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
