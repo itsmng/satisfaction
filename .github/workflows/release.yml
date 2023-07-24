@@ -6,8 +6,6 @@ on:
     - '*.*.*' # Push events to matching ex:20.15.10
 
 name: Create release with tag
-env:
-  TAG_VALUE: ${GITHUB_REF/refs\/tags\//}
 jobs:
   build:
     name: Upload Release Asset
@@ -21,18 +19,18 @@ jobs:
             GITHUB_NAME: ${{ github.event.repository.name }}
         run: |
           sudo apt-get install libxml-xpath-perl
-          echo ::set-output name=version_itsmng::$(xpath -e '/root/versions/version[num="'${TAG_VALUE}'"]/compatibility/text()' "${GITHUB_NAME:-satisfaction}.xml")
-          echo ::set-output name=tag::${TAG_VALUE}
-          echo ${{ steps.getxml.outputs.info }}
+          TAG_VALUE=${{  github.ref_name }}
+          version_itsmng=$(xpath -e '/root/versions/version[num="'${TAG_VALUE}'"]/compatibility/text()' "${GITHUB_NAME:-satisfaction}.xml")
+          asset="itsmng-${GITHUB_NAME:-satisfaction}-${TAG_VALUE}.tar.gz"
           IFS='.' read -ra version_parts <<< "${TAG_VALUE}"
           last_part=$(( ${version_parts[-1]} - 1 ))
           prev_version=$(echo "${version_parts[@]:0:${#version_parts[@]}-1}.$last_part" | tr ' ' '.')
-          bodyTXT=$(git log "$prev_version..HEAD" --pretty=format:"%s")
-          echo ::set-output name=body::${bodyTXT}
-          rm -rf "${GITHUB_NAME:-satisfaction}.xml" tools wiki screenshots test .git .github ISSUE_TEMPLATE.md TODO.txt "${GITHUB_NAME:-satisfaction}.png" 
-          cd ..
-          tar jcvf "itsmng-${GITHUB_NAME:-satisfaction}-${TAG_VALUE}.tar.bz2" "${GITHUB_NAME:-satisfaction}"
-          ls -al
+          bodyTXT=$(git log "${prev_version}..HEAD" --pretty=format:"%s")
+          echo "body=${bodyTXT}" >> $GITHUB_OUTPUT
+          echo "version_itsmn=${version_itsmn}" >> $GITHUB_OUTPUT
+          echo "asset_file=${asset}" >> $GITHUB_OUTPUT
+          echo "tag=${TAG_VALUE}" >> $GITHUB_OUTPUT
+          git archive --format=tar.gz --prefix=satisfaction/ -o "${asset}" HEAD
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -42,7 +40,7 @@ jobs:
           tag_name: ${{ github.ref }}
           release_name: | 
                     itsmng ${{ steps.build_.outputs.version_itsmng }} : Version ${{ github.ref }} disponible / available
-          body : Version ${{ steps.build_.outputs.tag }} released for itsmng ${{ steps.build_.outputs.version_itsmng }}
+          body : Version ${{ steps.build_.outputs.tag }} released for itsmng ${{ steps.build_.outputs.version_itsmng }} ${{ steps.build_.outputs.body }}
           draft: false
           prerelease: true
       - name: Upload Release Asset
@@ -53,7 +51,7 @@ jobs:
           GITHUB_NAME: ${{ github.event.repository.name }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: /home/runner/work/${{ github.event.repository.name }}/itsmng-${{ github.event.repository.name }}-${{ steps.build_.outputs.tag }}.tar.bz2
-          asset_name: itsmng-${{ github.event.repository.name }}-${{ steps.build_.outputs.tag }}.tar.bz2
-          asset_content_type: application/zip
-  
+          asset_path: /home/runner/work/${{ github.event.repository.name }}/${{ steps.build_.outputs.asset_file }}
+          asset_name: ${{ steps.build_.outputs.asset_file }} 
+          asset_content_type: application/x-compressed-tar
+
