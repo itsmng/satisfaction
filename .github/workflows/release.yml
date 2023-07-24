@@ -22,19 +22,15 @@ jobs:
         run: |
           sudo apt-get install libxml-xpath-perl
           TAG_VALUE=${{  github.ref_name }}
-          version_itsmng=$(xpath -e '/root/versions/version[num="'${TAG_VALUE}'"]/compatibility/text()' "${GITHUB_NAME:-satisfaction}.xml")
+          version_itsmng=$(xpath -e "/root/versions/version[num=\"${TAG_VALUE}\"]/compatibility/text()" "${GITHUB_NAME:-satisfaction}.xml")
           asset="itsmng-${GITHUB_NAME:-satisfaction}-${TAG_VALUE}.tar.gz"
           IFS='.' read -ra version_parts <<< "${TAG_VALUE}"
           last_part=$(( ${version_parts[-1]} - 1 ))
           prev_version=$(echo "${version_parts[@]:0:${#version_parts[@]}-1}.$last_part" | tr ' ' '.')
-          git log "${prev_version}..${TAG_VALUE}" --pretty=format:"- %s" > RELEASE.md
-          bodyTXT=$(cat RELEASE.md)
-          echo "body<<EOF" >> $GITHUB_OUTPUT
-          echo "$bodyTXT" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
-          echo "version_itsmn=${version_itsmn}" >> $GITHUB_OUTPUT
-          echo "tag=${TAG_VALUE}" >> $GITHUB_OUTPUT
+          echo "version_itsmng=${version_itsmng}" >> $GITHUB_OUTPUT
           echo "asset_file=${asset}" >> $GITHUB_OUTPUT
+          echo "Version ${TAG_VALUE} released for itsmng ${version_itsmng}\n" > RELEASE.md
+          git log "${prev_version}..${TAG_VALUE}" --pretty=format:"- %s" >> RELEASE.md
           git archive --format=tar.gz --prefix=satisfaction/ -o "${asset}" HEAD
       - name: Create Release
         id: create_release
@@ -43,11 +39,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ github.ref }}
-          release_name: | 
-                    itsmng ${{ steps.build_.outputs.version_itsmng }} : Version ${{ github.ref }} disponible / available
-          body : |
-            Version ${{ steps.build_.outputs.tag }} released for itsmng ${{ steps.build_.outputs.version_itsmng }}
-            ${{ steps.build_.outputs.body }}
+          release_name: |
+            itsmng ${{ steps.build_.outputs.version_itsmng }} : Version ${{ github.ref }} released
+          body_path: RELEASE.md
           draft: false
           prerelease: true
       - name: Upload Release Asset
