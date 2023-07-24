@@ -27,7 +27,8 @@ jobs:
           IFS='.' read -ra version_parts <<< "${TAG_VALUE}"
           last_part=$(( ${version_parts[-1]} - 1 ))
           prev_version=$(echo "${version_parts[@]:0:${#version_parts[@]}-1}.$last_part" | tr ' ' '.')
-          bodyTXT=$(git log "${prev_version}..${TAG_VALUE}" --pretty=format:"%s")
+          git log "${prev_version}..${TAG_VALUE}" --pretty=format:"- %s") > RELEASE.md
+          bodyTXT=$(cat RELEASE.md)
           bodyTXT="${bodyTXT//'%'/'%25'}"
           bodyTXT="${bodyTXT//$'\n'/'%0A'}"
           bodyTXT="${bodyTXT//$'\r'/'%0D'}"
