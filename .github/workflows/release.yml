@@ -28,6 +28,9 @@ jobs:
           last_part=$(( ${version_parts[-1]} - 1 ))
           prev_version=$(echo "${version_parts[@]:0:${#version_parts[@]}-1}.$last_part" | tr ' ' '.')
           bodyTXT=$(git log "${prev_version}..${TAG_VALUE}" --pretty=format:"%s")
+          bodyTXT="${bodyTXT//'%'/'%25'}"
+          bodyTXT="${bodyTXT//$'\n'/'%0A'}"
+          bodyTXT="${bodyTXT//$'\r'/'%0D'}"
           echo "body=${bodyTXT}" >> $GITHUB_OUTPUT
           echo "version_itsmn=${version_itsmn}" >> $GITHUB_OUTPUT
           echo "tag=${TAG_VALUE}" >> $GITHUB_OUTPUT
@@ -42,7 +45,9 @@ jobs:
           tag_name: ${{ github.ref }}
           release_name: | 
                     itsmng ${{ steps.build_.outputs.version_itsmng }} : Version ${{ github.ref }} disponible / available
-          body : Version ${{ steps.build_.outputs.tag }} released for itsmng ${{ steps.build_.outputs.version_itsmng }} ${{ steps.build_.outputs.body }}
+          body : |
+            Version ${{ steps.build_.outputs.tag }} released for itsmng ${{ steps.build_.outputs.version_itsmng }}
+            ${{ steps.build_.outputs.body }}
           draft: false
           prerelease: true
       - name: Upload Release Asset
