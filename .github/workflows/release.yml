@@ -21,7 +21,7 @@ jobs:
             GITHUB_NAME: ${{ github.event.repository.name }}
         run: |
           sudo apt-get install libxml-xpath-perl
-          TAG_VALUE=${{  github.ref_name }}
+          TAG_VALUE=${{ github.ref_name }}
           version_itsmng=$(xpath -e "/root/versions/version[num=\"${TAG_VALUE}\"]/compatibility/text()" "${GITHUB_NAME:-satisfaction}.xml")
           asset="itsmng-${GITHUB_NAME:-satisfaction}-${TAG_VALUE}.tar.gz"
           IFS='.' read -ra version_parts <<< "${TAG_VALUE}"
@@ -29,8 +29,10 @@ jobs:
           prev_version=$(echo "${version_parts[@]:0:${#version_parts[@]}-1}.$last_part" | tr ' ' '.')
           echo "version_itsmng=${version_itsmng}" >> $GITHUB_OUTPUT
           echo "asset_file=${asset}" >> $GITHUB_OUTPUT
-          echo "Version ${TAG_VALUE} released for itsmng ${version_itsmng}\n" > RELEASE.md
-          git log "${prev_version}..${TAG_VALUE}" --pretty=format:"- %s" >> RELEASE.md
+          echo "Version ${TAG_VALUE} released for itsmng ${version_itsmng}" > RELEASE.md
+          echo $(git log "${prev_version}..${TAG_VALUE}" --pretty=format:"- %s") >> RELEASE.md
+          echo "" >> RELEASE.md
+          echo "**Full Changelog**:  https://github.com/${{ github.repository }}/compare/${prev_version}...${TAG_VALUE}" >> RELEASE.md
           git archive --format=tar.gz --prefix=satisfaction/ -o "${asset}" HEAD
       - name: Create Release
         id: create_release
