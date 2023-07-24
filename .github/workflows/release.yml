@@ -25,7 +25,7 @@ jobs:
           IFS='.' read -ra version_parts <<< "${TAG_VALUE}"
           last_part=$(( ${version_parts[-1]} - 1 ))
           prev_version=$(echo "${version_parts[@]:0:${#version_parts[@]}-1}.$last_part" | tr ' ' '.')
-          bodyTXT=$(git log "${prev_version}..HEAD" --pretty=format:"%s")
+          bodyTXT=$(git log "${prev_version}..${TAG_VALUE}" --pretty=format:"%s")
           echo "body=${bodyTXT}" >> $GITHUB_OUTPUT
           echo "version_itsmn=${version_itsmn}" >> $GITHUB_OUTPUT
           echo "tag=${TAG_VALUE}" >> $GITHUB_OUTPUT
