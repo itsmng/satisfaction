@@ -29,10 +29,9 @@ jobs:
           prev_version=$(echo "${version_parts[@]:0:${#version_parts[@]}-1}.$last_part" | tr ' ' '.')
           git log "${prev_version}..${TAG_VALUE}" --pretty=format:"- %s" > RELEASE.md
           bodyTXT=$(cat RELEASE.md)
-          bodyTXT="${bodyTXT//'%'/'%25'}"
-          bodyTXT="${bodyTXT//$'\n'/'%0A'}"
-          bodyTXT="${bodyTXT//$'\r'/'%0D'}"
-          echo "body=${bodyTXT}" >> $GITHUB_OUTPUT
+          echo "body<<EOF" >> $GITHUB_OUTPUT
+          echo "$bodyTXT" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
           echo "version_itsmn=${version_itsmn}" >> $GITHUB_OUTPUT
           echo "tag=${TAG_VALUE}" >> $GITHUB_OUTPUT
           echo "asset_file=${asset}" >> $GITHUB_OUTPUT
