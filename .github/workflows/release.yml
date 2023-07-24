@@ -28,8 +28,8 @@ jobs:
           bodyTXT=$(git log "${prev_version}..HEAD" --pretty=format:"%s")
           echo "body=${bodyTXT}" >> $GITHUB_OUTPUT
           echo "version_itsmn=${version_itsmn}" >> $GITHUB_OUTPUT
-          echo "asset_file=${asset}" >> $GITHUB_OUTPUT
           echo "tag=${TAG_VALUE}" >> $GITHUB_OUTPUT
+          echo "asset_file=${asset}" >> $GITHUB_OUTPUT
           git archive --format=tar.gz --prefix=satisfaction/ -o "${asset}" HEAD
       - name: Create Release
         id: create_release
