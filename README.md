@@ -5,7 +5,7 @@ This plugin extends the satisfaction survey of GLPI.
 
 Satisfaction is a plugin which allows you to add questions to the satisfaction survey.
 
-Version 1.5.3 and before version 1.6.0 are a fork to work on top of GLPI 9.5 and its fork ISTM-NG in version 1.5.
+Version 1.5.4 and before version 1.6.0 are a fork to work on top of GLPI 9.5 and its fork ISTM-NG in version 1.5.
 
 Features
 --------
@@ -38,7 +38,7 @@ Ce plugin étend l'enquête de satisfaction de GLPI.
 
 Satisfaction est un plugin qui vous permet d'ajouter des questions à l'enquête de satisfaction.
 
-La version 1.5.3 et avant la version 1.6.0 sont un fork pour travailler au dessus de GLPI 9.5 et son fork ISTM-NG en version 1.5.
+La version 1.5.4 et avant la version 1.6.0 sont un fork pour travailler au dessus de GLPI 9.5 et son fork ISTM-NG en version 1.5.
 
 Fonctionnalités
 --------

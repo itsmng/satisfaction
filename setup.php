@@ -4,7 +4,7 @@
  * Init the hooks of the plugins -Needed
  */
 
-define ("PLUGIN_SATISFACTION_VERSION", "1.5.3");
+define ("PLUGIN_SATISFACTION_VERSION", "1.5.4");
 
 // Minimal GLPI version, inclusive
 define('PLUGIN_SATISFACTION_MIN_GLPI', '9.5');
