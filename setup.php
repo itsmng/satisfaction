@@ -43,8 +43,7 @@ function plugin_init_satisfaction() {
             $PLUGIN_HOOKS["menu_toadd"]['satisfaction'] = ['admin' => PluginSatisfactionMenu::class];
          }
 
-         if (isset($_SESSION['glpiactiveprofile']['interface'])
-             && $_SESSION['glpiactiveprofile']['interface'] == 'central') {
+         if (isset($_SESSION['glpiactiveprofile']['interface'])) {
             $PLUGIN_HOOKS['add_javascript']['satisfaction'] = ["satisfaction.js"];
             $PLUGIN_HOOKS['add_css']['satisfaction'] = ["satisfaction.css"];
          }
