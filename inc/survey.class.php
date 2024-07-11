@@ -179,27 +179,60 @@ class PluginSatisfactionSurvey extends CommonDBTM {
          return false;
       }
 
-      $this->initForm($ID, $options);
-      $this->showFormHeader($options);
+      $form = [
+        'action' => '/plugins/satisfaction/front/survey.form.php',
+        'buttons' => [
+            [
+                'type' => 'submit',
+                'name' => $this->isNewID($ID) ? 'add' : 'update',
+                'value' => $this->isNewID($ID) ? __('Add') : __('Update'),
+                'icon' => 'fa fa-save',
+                'class' => 'btn btn-secondary',
+            ],
+            # Delete button
+            $this->isNewID($ID) ? [] : [
+                'type' => 'submit',
+                'name' => 'purge',
+                'value' => __('Delete'),
+                'icon' => 'fa fa-trash',
+                'class' => 'btn btn-danger',
+            ],
+        ],
+        'content' => [
+            __('Satisfaction survey') => [
+                'visible' => true,
+                'inputs' => [
+                    $this->isNewID($ID) ? [] : [
+                        'type' => 'hidden',
+                        'name' => 'id',
+                        'value' => $ID
+                    ],
+                    __('Name') => [
+                        'name' => 'name',
+                        'type' => 'text',
+                        'value' => $this->fields['name'] ?? '',
+                    ],
+                    __('Comment') => [
+                        'name' => 'comment',
+                        'type' => 'textarea',
+                        'value' => $this->fields['comment'] ?? '',
+                    ],
+                    __('Active') => [
+                        'name' => 'is_active',
+                        'type' => 'checkbox',
+                        'value' => $this->fields['is_active'] ?? 0,
+                    ],
+                    __('Child entities') => [
+                        'name' => 'is_recursive',
+                        'type' => 'checkbox',
+                        'value' => $this->fields['is_recursive'] ?? 0,
+                    ]
+                ],
+            ],
+        ],
+      ];
 
-      echo "<tr class='tab_bg_1'>";
-      echo "<td>" . __('Name') . "</td>";
-      echo "<td>";
-      Html::autocompletionTextField($this, "name");
-      echo "</td>";
-      echo "<td>" . __('Comments') . "</td>";
-      echo "<td>";
-      echo "<textarea cols='60' rows='6' name='comment' >" . $this->fields["comment"] . "</textarea>";
-      echo "</td></tr>";
-
-      echo "<tr class='tab_bg_1'>";
-      echo "<td>" . __('Active') . "</td>";
-      echo "<td>";
-      Dropdown::showYesNo("is_active", $this->fields["is_active"]);
-      echo "</td><td colspan='2'></td></tr>";
-
-      $this->showFormButtons($options);
-      Html::closeForm();
+      renderTwigForm($form);
 
       return true;
    }
