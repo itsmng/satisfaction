@@ -302,9 +302,9 @@ class PluginSatisfactionSurveyQuestion extends CommonDBChild {
                 ],
                 'inputs' => [
                     __('Note on', 'satisfaction') => [
-                        'name' => 'note',
+                        'name' => 'maximun',
                         'type' => 'number',
-                        'value' => $surveyquestion->fields['note']?:0,
+                        'value' => $surveyquestion->fields['maximun']?:10,
                         'min' => 1,
                         'col_lg' => 6,
                         $surveyquestion->fields['type'] != self::NOTE ? 'disabled' : '' => '',
@@ -312,7 +312,7 @@ class PluginSatisfactionSurveyQuestion extends CommonDBChild {
                     __('Default value') => [
                         'name' => 'default_value',
                         'type' => 'number',
-                        'value' => $surveyquestion->fields['default_value']?:0,
+                        'value' => $surveyquestion->fields['default_value'],
                         'min' => 1,
                         'max' => $surveyquestion->fields['maximun'],
                         'col_lg' => 6,

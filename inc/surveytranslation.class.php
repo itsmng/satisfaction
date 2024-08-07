@@ -149,7 +149,7 @@ class PluginSatisfactionSurveyTranslation extends CommonDBChild {
          echo "};";
          echo "</script>\n";
          echo "<div class='center'>".
-            "<a class='vsubmit' href='javascript:addTranslation".
+            "<a class='btn btn-secondary mt-2' href='javascript:addTranslation".
             $item->getType().$item->getID()."$rand();'>". __('Add a new translation').
             "</a></div><br>";
       }
@@ -159,82 +159,72 @@ class PluginSatisfactionSurveyTranslation extends CommonDBChild {
          // ** MASS ACTION **
          // TODO Remove edit action
          if ($canedit) {
-            Html::openMassiveActionsForm('mass'.__CLASS__.$rand);
-            $massiveactionparams = ['item' => __CLASS__, 'container' => 'mass'.__CLASS__.$rand];
+            $massiveactionparams = [
+                'container' => 'mass'.__CLASS__.$rand,
+                'display_arrow' => false,
+            ];
             Html::showMassiveActions($massiveactionparams);
          }
          // ** MASS ACTION **
 
-         echo "<div class='center'>";
-         echo "<table class='tab_cadre_fixehov'><tr class='tab_bg_2'>";
-
-         // ** HEADER **
-         echo "<th colspan='4'>".__("List of translations")."</th></tr><tr>";
-         if ($canedit) {
-            echo "<th width='10'>";
-            echo Html::getCheckAllAsCheckbox('mass'.__CLASS__.$rand);
-            echo "</th>";
-         }
-         echo "<th>".__("Language")."</th>";
-         echo "<th>".__("Question")."</th>";
-         echo "<th>".__("Value")."</th></tr>";
-         // ** HEADER **
-
-         // ** ROWS **
+         echo "<h2>".__("List of translations")."</h2>";
+         $fields = [
+            'language' => __('Language'),
+            'question' => __('Question'),
+            'val' => __('Value'),
+            'edit' => __('Edit'),
+         ];
+         $values = [];
+         $massiveactionValues = [];
          foreach ($items as $data) {
-            $tdAttributes = '';
+            $newValue = [];
             if ($canedit) {
-               $tdAttributes =
-                  "style='cursor:pointer;text-align:center;' ".
-                  //"onClick='viewEditTranslation".$data['itemtype'].$data['id']."$rand();'";
-                  "onClick='viewEditTranslation".$data['id']."$rand();'";
+               $massiveactionValues[$data["id"]] = sprintf('item[%s][%s]', PluginSatisfactionSurveyTranslation::getType(), $data["id"]);
             }
-            echo "<tr class='tab_bg_1'>";
 
-            // ** MASS ACTION **
             if ($canedit) {
-               echo "<td class='center'>";
-               Html::showMassiveActionCheckBox(__CLASS__, $data["id"]);
-               echo "</td>";
+               $url = Plugin::getWebDir('satisfaction')."/ajax/surveytranslation.form.php";
+               $dataId = $data["id"];
+               $surveyId = $item->getID();
+               echo <<<HTML
+                  <script type='text/javascript' >
+                  function viewEditTranslation{$data['id']}$rand() {
+                     $.ajax({
+                        method: 'POST',
+                        url: '$url',
+                        data: {
+                           id: $dataId,
+                           survey_id: $surveyId,
+                           action: 'GET'
+                        },
+                        success: function(data) {
+                           $('#viewtranslation{$item->getType()}{$item->getID()}$rand').html(data);
+                        }
+                     });
+                  }
+                  </script>
+               HTML;
             }
-            // ** MASS ACTION **
-
-            echo "<td $tdAttributes>";
-            if ($canedit) {
-               echo "\n<script type='text/javascript' >\n";
-               echo "function viewEditTranslation".$data['id']."$rand() {\n";
-               $params = [
-                  'id' => $data["id"],
-                  'survey_id' => $item->getID(),
-                  'action' => 'GET'
-               ];
-               Ajax::updateItemJsCode("viewtranslation" . $item->getType().$item->getID() . "$rand",
-                  Plugin::getWebDir('satisfaction')."/ajax/surveytranslation.form.php",
-                  $params);
-               echo "};";
-               echo "</script>\n";
-            }
-            echo Dropdown::getLanguageName($data['language']);
-            echo "</td>";
+            $newValue['language'] = Dropdown::getLanguageName($data['language']);
 
             $surveyQuestion = new PluginSatisfactionSurveyQuestion();
             $surveyQuestion->getFromDB($data['glpi_plugin_satisfaction_surveyquestions_id']);
 
-            echo "<td $tdAttributes>".$surveyQuestion->getName()."</td>";
-            echo "<td $tdAttributes>".$data['value']."</td>";
-            echo "</tr>";
+            $newValue['question'] = $surveyQuestion->getName();
+            $newValue['val'] = $data['value'];
+            $newValue['edit'] = <<<HTML
+                <a class='btn btn-sm btn-secondary' href='javascript:viewEditTranslation{$data['id']}$rand();'>
+                    edit
+                </a>
+            HTML;
+            $values[$data["id"]] = $newValue;
          }
-         // ** ROWS **
-         echo "</table>";
-
-         // ** MASS ACTION **
-         if ($canedit) {
-            $massiveactionparams['ontop'] = false;
-            Html::showMassiveActions($massiveactionparams);
-            Html::closeForm();
-         }
-         // ** MASS ACTION **
-
+         renderTwigTemplate('table.twig', [
+            'id' => 'mass'.__CLASS__.$rand,
+            'fields' => $fields,
+            'values' => $values,
+            'massive_action' => $massiveactionValues,
+         ]);
       } else {
          echo "<table class='tab_cadre_fixe'><tr class='tab_bg_2'>";
          echo "<th class='b'>" . __("No translation found", "satisfaction")."</th></tr></table>";
@@ -256,9 +246,6 @@ class PluginSatisfactionSurveyTranslation extends CommonDBChild {
          // Create item
          $item->check(-1, CREATE);
       }
-
-      $tdBaseStyle="style='text-align:center;'";
-      $rand = mt_rand();
 
       $item = new PluginSatisfactionSurveyQuestion();
       $datas = $item->find(['plugin_satisfaction_surveys_id' => $surveyId]);
@@ -349,7 +336,7 @@ class PluginSatisfactionSurveyTranslation extends CommonDBChild {
                   __('Language') => [
                      'name' => 'language',
                      'type' => 'select',
-                     'values' => Dropdown::getLanguages(),
+                     'values' => Language::getLanguages(),
                      'value' => $_SESSION['glpilanguage'],
                      'col_lg' => 6,
                   ],
