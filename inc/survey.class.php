@@ -180,7 +180,7 @@ class PluginSatisfactionSurvey extends CommonDBTM {
       }
 
       $form = [
-        'action' => '/plugins/satisfaction/front/survey.form.php',
+        'action' => $this->getFormURL(),
         'buttons' => [
             [
                 'type' => 'submit',

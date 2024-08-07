@@ -191,131 +191,138 @@ class PluginSatisfactionSurveyQuestion extends CommonDBChild {
          return false;
       }
 
-      echo "<form name='form' method='post' action='" . Toolbox::getItemTypeFormURL(self::getType()) . "'>";
-
-      echo "<div align='center'><table class='tab_cadre_fixe'>";
-      echo "<tr><th colspan='4'>" . __('Add a question', 'satisfaction') . "</th></tr>";
-
-      echo "<tr class='tab_bg_1'>";
-      echo "<td>" . self::getTypeName(1) . "&nbsp;:</td>";
-      echo "<td><textarea name='name' cols='50' rows='4'>" .
-           $surveyquestion->fields["name"] . "</textarea></td>";
-      echo "<input type='hidden' name='" . self::$items_id . "' value='" .
-           $surveyquestion->fields[self::$items_id] . "'>";
-      echo "</td>";
-      echo "<td rowspan='2'>" . __('Comments') . "</td>";
-      echo "<td rowspan='2'>";
-      echo "<textarea cols='60' rows='6' name='comment' >" . $surveyquestion->fields["comment"] . "</textarea>";
-      echo "</td></tr>";
-
-      echo "<tr class='tab_bg_1'>";
-      echo "<td>" . __('Type') . "</td>";
-      echo "<td>";
-      $array = self::getQuestionTypeList();
-      Dropdown::showFromArray('type', $array, ['value'     => $surveyquestion->fields['type'],
-                                               'on_change' => "plugin_satisfaction_loadtype(this.value);"]);
-
       $NOTE = self::NOTE;
       $NUMERIC_SCALE_WITH_NC = self::NUMERIC_SCALE_WITH_NC;
       $script = <<<JAVASCRIPT
-function plugin_satisfaction_loadtype(val, note){
-  if(val == "$NOTE") {
-    $('#show_note').show();
-    $('#show_note select').prop('disabled', '');
-    $('#show_numeric_scale_with_nc').hide();
-    $('#show_show_numeric_scale_with_nc select').prop('disabled', 'disabled');
-  } else if(val == "$NUMERIC_SCALE_WITH_NC") {
-    $('#show_numeric_scale_with_nc').show();
-    $('#show_numeric_scale_with_nc select').prop('disabled', '');
-    $('#show_note').hide();
-    $('#show_note select').prop('disabled', 'disabled');
-  } else {
-    $('#show_numeric_scale_with_nc').hide();
-    $('#show_numeric_scale_with_nc select').prop('disabled', 'disabled');
-    $('#show_note').hide();
-    $('#show_note select').prop('disabled', 'disabled');
-  }
-};
-JAVASCRIPT;
+         function plugin_satisfaction_loadtype(val, note){
+           if(val == "$NOTE") {
+             $('#show_note').show();
+             $('#show_note input').prop('disabled', '');
+             $('#show_numeric_scale_with_nc').hide();
+             $('#show_show_numeric_scale_with_nc input').prop('disabled', 'disabled');
+           } else if(val == "$NUMERIC_SCALE_WITH_NC") {
+             $('#show_numeric_scale_with_nc').show();
+             $('#show_numeric_scale_with_nc input').prop('disabled', '');
+             $('#show_note').hide();
+             $('#show_note input').prop('disabled', 'disabled');
+           } else {
+             $('#show_numeric_scale_with_nc').hide();
+             $('#show_numeric_scale_with_nc input').prop('disabled', 'disabled');
+             $('#show_note').hide();
+             $('#show_note input').prop('disabled', 'disabled');
+           }
+         };
+      JAVASCRIPT;
 
       echo Html::scriptBlock($script);
-      $isNote = $surveyquestion->fields['type'] == self::NOTE;
-      $isNumeric = $surveyquestion->fields['type'] == self::NUMERIC_SCALE_WITH_NC;
-      $NoteStyle = $isNote ? "" : "style='display: none '";
-      $NumericStyle = $isNumeric ? "" : "style='display: none '";
-      echo "</td>";
-      echo "</tr>";
 
-      echo "<tr class='tab_bg_1' id='show_numeric_scale_with_nc' $NumericStyle>";
-      echo "<td>";
-      echo __('Note minimun', 'satisfaction');
-      echo "</td>";
-      echo "<td>";
-      Dropdown::showNumber('minimun', ['max'   => 1,
-                                      'min'   => 0,
-                                      'value' => $surveyquestion->fields['minimun']?:0,
-                                      'specific_tags' => $isNumeric ? [] : ['disabled' => 'disabled']]);
-      echo "</td>";
-      echo "<td>";
-      echo __('Note maximun', 'satisfaction');
-      echo "</td>";
-      echo "<td>";
-      Dropdown::showNumber('maximun', ['max'   => 10,
-                                      'min'   => 2,
-                                      'value' => $surveyquestion->fields['maximun']?:10,
-                                      'specific_tags' => $isNumeric ? [] : ['disabled' => 'disabled']]);
-      echo "</td>";
-      echo "</tr>";
-
-      echo "<tr class='tab_bg_1' id='show_note' $NoteStyle>";
-      echo "<td>";
-      echo __('Note on', 'satisfaction');
-      echo "</td>";
-      echo "<td>";
-      Dropdown::showNumber('maximun', ['max'   => 10,
-                                      'min'   => 2,
-                                      'value' => $surveyquestion->fields['maximun']?:10,
-                                      'specific_tags' => $isNote ? [] : ['disabled' => 'disabled'],
-                                      'on_change' => "plugin_satisfaction_load_defaultvalue(\"" . Plugin::getWebDir('satisfaction') . "\", this.value);"]);
-      echo "</td>";
-
-      $max_default_value = $surveyquestion->fields['maximun']?:10;
-
-      echo "<td>";
-      echo __('Default value');
-      echo "</td>";
-      echo "<td id='default_value'>";
-      Dropdown::showNumber('default_value', ['max'   => $max_default_value,
-                                      'min'   => 1,
-                                      'specific_tags' => $isNote ? [] : ['disabled' => 'disabled'],
-                                      'value' => $surveyquestion->fields['default_value']]);
-      echo "</td>";
-      echo "</tr>";
-
-      echo "<tr class='tab_bg_1'>";
-      echo "<td>";
-      echo '<label for="is_required">' . __('required', 'satisfaction') . "</label>";
-      echo "</td>";
-      echo "<td>";
-      echo '<input type="hidden" name="is_required" value="0" />';
-      echo '<input type="checkbox" id="is_required" name="is_required"'. ($surveyquestion->fields['is_required'] ? ' checked' : '' ) .' value="1" />';
-      echo "</td>";
-      echo "</tr>";
-
-      echo "<tr>";
-      echo "<td class='tab_bg_2 center' colspan='4'>";
-      if ($ID <= 0) {
-         echo Html::hidden(self::$items_id, ['value' => $survey->getField('id')]);
-         echo "<input type='submit' name='add' class='submit' value='" . _sx('button', 'Add') . "' >";
-      } else {
-         echo Html::hidden('id', ['value' => $ID]);
-         echo "<input type='submit' name='update' class='submit' value='" . _sx('button', 'Save') . "' >";
-      }
-      echo "</td>";
-      echo "</tr>";
-      echo "</table>";
-
-      Html::closeForm();
+      $form = [
+         'action' => $surveyquestion->getFormURL(),
+         'buttons' => [
+             [
+                 'name' => $ID <= 0 ? 'add' : 'update',
+                 'value' => $ID <= 0 ? _sx('button', 'Add') : _sx('button', 'Save'),
+                 'class' => 'btn btn-secondary'
+             ],
+         ],
+         'content' => [
+             __('Add a question', 'satisfaction') => [
+                 'visible' => true,
+                 'inputs' => [
+                     [
+                         'type' => 'hidden',
+                         'name' => self::$items_id,
+                         'value' => $surveyquestion->fields[self::$items_id],
+                     ],
+                     $ID <= 0 ? [
+                         'type' => 'hidden',
+                         'name' => self::$items_id,
+                         'value' => $survey->getField('id'),
+                     ] : [],
+                     $ID > 0 ? [
+                         'type' => 'hidden',
+                         'name' => 'id',
+                         'value' => $ID,
+                     ] : [],
+                     self::getTypeName(1) => [
+                         'name' => 'name',
+                         'type' => 'textarea',
+                         'value' => $surveyquestion->fields["name"],
+                         'col_lg' => 6,
+                     ],
+                     __('Comments') => [
+                         'name' => 'comment',
+                         'type' => 'textarea',
+                         'value' => $surveyquestion->fields["comment"],
+                         'col_lg' => 6,
+                     ],
+                     __('Type') => [
+                         'name' => 'type',
+                         'type' => 'select',
+                         'values' => self::getQuestionTypeList(),
+                         'value' => $surveyquestion->fields['type'],
+                         'hooks' => [
+                            'change' => "plugin_satisfaction_loadtype(this.value);",
+                         ],
+                         'col_lg' => 8,
+                     ],
+                     __('required', 'satisfaction') => [
+                         'name' => 'is_required',
+                         'type' => 'checkbox',
+                         'value' => $surveyquestion->fields['is_required'] ? 1 : 0,
+                     ],
+                 ],
+            ],
+            [
+                'attributes' => [
+                    'id' => 'show_numeric_scale_with_nc',
+                    'style' => $surveyquestion->fields['type'] == self::NUMERIC_SCALE_WITH_NC ? '' : 'display: none;',
+                ],
+                'inputs' => [
+                    __('Note minimum', 'satisfaction') => [
+                        'name' => 'minimun',
+                        'type' => 'number',
+                        'value' => $surveyquestion->fields['minimun']?:0,
+                        'col_lg' => 6,
+                        $surveyquestion->fields['type'] != self::NUMERIC_SCALE_WITH_NC ? 'disabled' : '' => '',
+                    ],
+                    __('Note maximum', 'satisfaction') => [
+                        'name' => 'maximun',
+                        'type' => 'number',
+                        'value' => $surveyquestion->fields['maximun']?:10,
+                        'col_lg' => 6,
+                        $surveyquestion->fields['type'] != self::NUMERIC_SCALE_WITH_NC ? 'disabled' : '' => '',
+                    ],
+                ],
+            ],
+            [
+                'attributes' => [
+                    'id' => 'show_note',
+                    'style' => $surveyquestion->fields['type'] == self::NOTE ? '' : 'display: none;',
+                ],
+                'inputs' => [
+                    __('Note on', 'satisfaction') => [
+                        'name' => 'note',
+                        'type' => 'number',
+                        'value' => $surveyquestion->fields['note']?:0,
+                        'min' => 1,
+                        'col_lg' => 6,
+                        $surveyquestion->fields['type'] != self::NOTE ? 'disabled' : '' => '',
+                    ],
+                    __('Default value') => [
+                        'name' => 'default_value',
+                        'type' => 'number',
+                        'value' => $surveyquestion->fields['default_value']?:0,
+                        'min' => 1,
+                        'max' => $surveyquestion->fields['maximun'],
+                        'col_lg' => 6,
+                        $surveyquestion->fields['type'] != self::NOTE ? 'disabled' : '' => '',
+                    ],
+                ],
+            ]
+         ],
+      ];
+      renderTwigForm($form);
    }
 
    /**

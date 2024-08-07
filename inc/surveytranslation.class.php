@@ -259,80 +259,119 @@ class PluginSatisfactionSurveyTranslation extends CommonDBChild {
 
       $tdBaseStyle="style='text-align:center;'";
       $rand = mt_rand();
-      echo $this->getFormHeader($options['id'], $surveyId);
 
-      echo "<tr>";
-      // Edit Translation
+      $item = new PluginSatisfactionSurveyQuestion();
+      $datas = $item->find(['plugin_satisfaction_surveys_id' => $surveyId]);
+
+      $questions = [];
+      foreach($datas as $data){
+         $questions[$data['id']] = $data['name'];
+      }
+
       if ($options['id'] > 0) {
-         echo "<input type='hidden' name='action' value='EDIT'>";
-
-         $surveyTranslationData = PluginSatisfactionSurveyTranslationDAO::getSurveyTranslationByID($options['id']);
-
-         $surveyQuestion = new PluginSatisfactionSurveyQuestion();
-         $surveyQuestion->getFromDB($surveyTranslationData['glpi_plugin_satisfaction_surveyquestions_id']);
-
-         // Language
-         echo "<td width='10%' $tdBaseStyle>";
-         echo "<input type='hidden' name='language' value='".$surveyTranslationData['language']."'>";
-         echo "<input type='hidden' name='id' value='".$options['id']."'>";
-         echo "<input type='hidden' name='question_id' value='".$surveyQuestion->getID()."'>";
-
-         echo Dropdown::getLanguageName($surveyTranslationData['language']);
-         echo "</td>";
-         // Question
-         echo "<td width='45%' $tdBaseStyle>".$surveyQuestion->getName()."</td>";
-         // Value
-         echo "<td width='45%' $tdBaseStyle><textarea style='position:relative; width:90%; height:60px' type='textarea' name='value'>";
-         echo $surveyTranslationData['value']."</textarea></td>";
-         echo "</tr>";
-
-         // Save button
-         echo "<tr><td class='center' colspan='3'>\n";
-         echo Html::submit(_x('button', 'Save'), ['name' => 'update']);
-         echo "</tr>";
-      }
-      // New translation
-      else{
-         echo "<input type='hidden' name='action' value='NEW'>";
-
-         // Language
-         echo "<td width='10%' $tdBaseStyle>";
-         $rand   = Dropdown::showLanguages(
-            "language",
-            ['display_none' => true, 'value' => $_SESSION['glpilanguage']]);
-
-         $params = [
-            'language' => '__VALUE__',
-            'itemtype' => get_class($item),
-            'items_id' => $item->getID()
-         ];
-
-         Ajax::updateItemOnSelectEvent("dropdown_language$rand",
-            "span_fields",
-            $CFG_GLPI["root_doc"]."/ajax/updateTranslationFields.php",
-            $params);
-
-         echo "</td>";
-
-         // Question
-         echo "<td width='30%' $tdBaseStyle>".$this->getQuestionDropdown($surveyId)."</td>";
-
-         // Value
-
-         echo "<td width='60%' $tdBaseStyle><textarea style='position:relative; width:90%; height:60px' type='textarea' name='value'>";
-         echo "</textarea></td>";
-
-         echo "</tr>";
-
-         // Add button
-         echo "<tr><td class='center' colspan='3'>\n";
-         echo Html::submit(_x('button', 'Add'), ['name' => 'update']);
-         echo "</tr>";
+          $surveyTranslationData = PluginSatisfactionSurveyTranslationDAO::getSurveyTranslationByID($options['id']);
+          $surveyQuestion = new PluginSatisfactionSurveyQuestion();
+          $surveyQuestion->getFromDB($surveyTranslationData['glpi_plugin_satisfaction_surveyquestions_id']);
       }
 
-      // Close for Form
-      echo "</table></div>";
-      echo Html::closeForm(false);
+      $form = [
+         'action' => Plugin::getWebDir('satisfaction')."/ajax/surveytranslation.form.php",
+         'buttons' => [
+            [
+               'name' => 'update',
+               'value' => $options['id'] > 0 ? _sx('button', 'Save') : _sx('button', 'Add'),
+               'class' => 'btn btn-secondary'
+            ],
+         ],
+         'content' => [
+            __('Add a translation', 'satisfaction') => $options['id'] > 0 ? [
+                'visible' => true,
+                'inputs' => [
+                    [
+                       'type' => 'hidden',
+                       'name' => 'survey_id',
+                       'value' => $surveyId,
+                    ],
+                    [
+                        'type' => 'hidden',
+                        'name' => 'id',
+                        'value' => $options['id'],
+                    ],
+                    [
+                        'type' => 'hidden',
+                        'name' => 'action',
+                        'value' => 'EDIT',
+                    ],
+                    [
+                        'type' => 'hidden',
+                        'name' => 'language',
+                        'value' => $options['language'],
+                    ],
+                    [
+                        'name' => 'question_id',
+                        'type' => 'hidden',
+                        'value' => $surveyQuestion->getID(),
+                    ],
+                    __('Language') => [
+                        'content' => Dropdown::getLanguageName($surveyTranslationData['language']),
+                        'col_lg' => 6,
+                    ],
+                    __('Question') => [
+                        'content' => $surveyQuestion->getName(),
+                        'col_lg' => 6,
+                    ],
+                    __('Value') => [
+                        'type' => 'textarea',
+                        'name' => 'value',
+                        'value' => $surveyTranslationData['value'],
+                        'col_lg' => 12,
+                        'col_md' => 12,
+                    ],
+                ],
+            ] : [
+               'visible' => true,
+               'inputs' => [
+                  [
+                     'type' => 'hidden',
+                     'name' => 'survey_id',
+                     'value' => $surveyId,
+                  ],
+                  [
+                     'type' => 'hidden',
+                     'name' => 'action',
+                     'value' => 'NEW',
+                  ],
+                  $options['id'] > 0 ? [
+                     'type' => 'hidden',
+                     'name' => 'id',
+                     'value' => $options['id'],
+                  ] : [],
+                  __('Language') => [
+                     'name' => 'language',
+                     'type' => 'select',
+                     'values' => Dropdown::getLanguages(),
+                     'value' => $_SESSION['glpilanguage'],
+                     'col_lg' => 6,
+                  ],
+                  __('Question') => [
+                     'name' => 'question_id',
+                     'type' => 'select',
+                     'values' => $questions,
+                     'value' => $options['question_id'],
+                     'col_lg' => 6,
+                  ],
+                  __('Value') => [
+                     'name' => 'value',
+                     'type' => 'textarea',
+                     'value' => $options['value'],
+                     'col_lg' => 12,
+                     'col_md' => 12,
+                  ],
+               ],
+            ],
+         ],
+      ];
+      renderTwigForm($form);
    }
 
    function getQuestionDropdown($surveyId){
@@ -475,7 +514,7 @@ class PluginSatisfactionSurveyTranslation extends CommonDBChild {
 
       $translationList = PluginSatisfactionSurveyTranslationDAO::getSurveyTranslationByCrit($crit);
       $translation = array_pop($translationList);
-      
+
       return $translation['value'];
    }
 }
