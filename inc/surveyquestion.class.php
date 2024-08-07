@@ -137,27 +137,38 @@ class PluginSatisfactionSurveyQuestion extends CommonDBChild {
 
          $rand = mt_rand();
          if ($canpurge) {
-            //TODO : Detect delete to update history
-            Html::openMassiveActionsForm('mass' . __CLASS__ . $rand);
-            $massiveactionparams = ['item' => __CLASS__, 'container' => 'mass' . __CLASS__ . $rand];
+            $massiveactionparams = [
+                'item' => __CLASS__,
+                'container' => 'mass' . __CLASS__ . $rand,
+                'display_arrow' => false,
+            ];
             Html::showMassiveActions($massiveactionparams);
          }
-
-         echo "<table class='tab_cadre_fixehov'>";
-         echo "<tr>";
-         if ($canpurge) {
-            echo "<th width='10'>" . Html::getCheckAllAsCheckbox('mass' . __CLASS__ . $rand) . "</th>";
-         }
-         echo "<th>" . self::getTypeName(2) . "</th>";
-         echo "<th>" . __('Type') . "</th>";
-         echo "<th>" . __('required', 'satisfaction') . "</th></tr>";
+         $fields = [
+            'name'          => self::getTypeName(2),
+            'type'          => __('Type'),
+            'required'   => __('required', 'satisfaction')
+         ];
+         $values = [];
+         $massive_action = [];
 
          foreach ($questions as $question) {
             if ($squestions_obj->getFromDB($question['id'])) {
-               $squestions_obj->showOne($canedit, $canpurge, $rand_survey);
+                $values[$question['id']] = [
+                    'name' => $squestions_obj->fields['name'],
+                    'type' => self::getQuestionType($squestions_obj->fields['type']),
+                    'required' => $squestions_obj->fields['is_required'] ? __('required', 'satisfaction') : ''
+                ];
+                $massive_action[$question['id']] = sprintf('item[%s][%s]', __CLASS__, $question['id']);
             }
          }
-         echo "</table>";
+
+         renderTwigTemplate('table.twig', [
+            'id' => 'mass' . __CLASS__ . $rand,
+            'fields' => $fields,
+            'values' => $values,
+            'massive_action' => $massive_action,
+         ]);
 
          if ($canpurge) {
             $paramsma['ontop'] = false;
