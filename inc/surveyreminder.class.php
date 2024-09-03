@@ -139,75 +139,84 @@ class PluginSatisfactionSurveyReminder extends CommonDBChild {
          echo "</script>\n";
          echo "<div class='center'>";
          // Add a reminder
-         echo "<a href='javascript:viewAddReminder$sID$rand_survey();'>";
+         echo "<a href='javascript:viewAddReminder$sID$rand_survey();' class='btn btn-secondary'>";
          echo __('Add a reminder', 'satisfaction') . "</a>\n";
-         echo "<br>";
          // Add a preset reminder
-         echo "<a href='javascript:viewAddPredefinedReminder$sID$rand_survey();'>";
+         echo "<a href='javascript:viewAddPredefinedReminder$sID$rand_survey();' class='btn btn-secondary'>";
          echo __('Add a predefined reminder', 'satisfaction') . "</a>\n";
          echo "</div><br>";
       }
 
-      // Dispaly an option to setup 
+      // Dispaly an option to setup
       echo "<form name='form' method='post'>";
       echo "<table class='tab_cadre_fixe'><tr class='tab_bg_2'>";
       echo "<th class='b' colspan='2'>" . __('Setup maximum number of days to send reminder', 'satisfaction') . "</th>";
       echo "<tr class='tab_bg_1'><td>" . __('Maximum number of days to send reminder', 'satisfaction') . "</td>";
       echo "<td>";
-      Dropdown::showNumber('reminders_days', ['value' => $survey->fields["reminders_days"],
-                                              'min'   => 1,
-                                              'max'   => 365]);
+      echo "<input type='number' class='form-control' name='reminders_days' value='" . $survey->fields["reminders_days"] . "' min='1' max='365'>";
       echo "</td></tr>";
       echo "<tr>";
       echo "<td class='tab_bg_2 center' colspan='4'>";
       echo Html::hidden('id', ['value' => $sID]);
-      echo "<input type='submit' name='update' class='submit' value='" . _sx('button', 'Save') . "' >";
+      echo "<input type='submit' name='update' class='btn btn-secondary' value='" . _sx('button', 'Save') . "' >";
       echo "</td>";
       echo "</tr></table>";
       Html::closeForm();
 
       // Display existing questions
-      $remminders = $surveyReminder->find([self::$items_id => $sID], 'id');
-      if (count($remminders) == 0) {
-         echo "<table class='tab_cadre_fixe'><tr class='tab_bg_2'>";
-         echo "<th class='b'>" . __('No reminders for this survey', 'satisfaction') . "</th>";
-         echo "</tr></table>";
-      } else {
-
-         $rand = mt_rand();
-         if ($canpurge) {
-            //TODO : Detect delete to update history
-            Html::openMassiveActionsForm('mass' . __CLASS__ . $rand);
-            $massiveactionparams = ['item' => __CLASS__, 'container' => 'mass' . __CLASS__ . $rand];
-            Html::showMassiveActions($massiveactionparams);
-         }
-
-         echo "<table class='tab_cadre_fixehov'>";
-         echo "<tr>";
-         if ($canpurge) {
-            echo "<th width='10'>" . Html::getCheckAllAsCheckbox('mass' . __CLASS__ . $rand) . "</th>";
-         }
-         echo "<th>" . $surveyReminder->getColumnTitles(self::COLUMN_NAME) . "</th>";
-         echo "<th>" . $surveyReminder->getColumnTitles(self::COLUMN_DURATION_TYPE) . "</th>";
-         echo "<th>" . $surveyReminder->getColumnTitles(self::COLUMN_DURATION) . "</th>";
-         echo "<th>" . $surveyReminder->getColumnTitles(self::COLUMN_IS_ACTIVE) . "</th>";
-
-         echo "</tr>";
-
-         foreach ($remminders as $reminder) {
-            if ($surveyReminder->getFromDB($reminder['id'])) {
-               $surveyReminder->showOne($canedit, $canpurge, $rand_survey);
-            }
-         }
-         echo "</table>";
-
-         if ($canpurge) {
-            $paramsma['ontop'] = false;
-            Html::showMassiveActions($paramsma);
-            Html::closeForm();
-         }
+      $reminders = $surveyReminder->find([self::$items_id => $sID], 'id');
+      $fields    = [
+         'name'        => __('Name'),
+         'durationType' => __('Duration Type'),
+         'duration'    => __('Duration'),
+         'isActive'    => __('Active'),
+         'edit'        => __('Edit'),
+      ];
+      $values = [];
+      $massive_action = [];
+      $mass_id = 'mass' . __CLASS__ . mt_rand();
+      if ($canpurge) {
+         $massiveactionparams = ['item' => __CLASS__, 'container' => $mass_id, 'display_arrow' => false];
+         Html::showMassiveActions($massiveactionparams);
       }
-
+      foreach ($reminders as $reminder) {
+         $surveyReminder = new self();
+         if ( $surveyReminder->getFromDB($reminder['id'])) {
+             $rand = mt_rand();
+             $newValues = [
+                'name' => $surveyReminder->fields['name'],
+                'durationType' => $surveyReminder->fields['duration_type'],
+                'duration'    => $surveyReminder->fields['duration'],
+                'isActive'    => $surveyReminder->fields['is_active'] ? __('Yes') : __('No'),
+             ];
+             if ($canedit) {
+                echo "\n<script type='text/javascript' >\n";
+                echo "function viewEditReminder" . $surveyReminder->fields[self::$items_id] . $surveyReminder->fields["id"] . "$rand() {\n";
+                $params = ['type'          => __CLASS__,
+                           'parenttype'    => self::$itemtype,
+                           self::$items_id => $surveyReminder->fields[self::$items_id],
+                           'id'            => $surveyReminder->fields["id"]];
+                Ajax::updateItemJsCode("viewreminder" . $surveyReminder->fields[self::$items_id] . "$rand_survey",
+                                       $CFG_GLPI["root_doc"] . "/ajax/viewsubitem.php", $params);
+                echo "};";
+                echo "</script>\n";
+                $newValues['edit'] = '<button class="btn btn-sm btn-secondary" onclick="viewEditReminder' .
+                    $surveyReminder->fields[self::$items_id] .
+                    $surveyReminder->fields["id"] . "$rand()\">" .
+                    __('Edit') . '</button>';
+             }
+             $values[] = $newValues;
+             if ($canpurge) {
+                $massive_action[] = sprintf('item[%s][%s]', $surveyReminder::class, $surveyReminder->fields["id"]);
+             }
+         };
+      };
+      renderTwigTemplate('table.twig', [
+         'id'        => $mass_id,
+         'fields'    => $fields,
+         'values'    => $values,
+         'massive_action' => $massive_action,
+      ]);
    }
 
    /**
@@ -235,84 +244,68 @@ class PluginSatisfactionSurveyReminder extends CommonDBChild {
       $displayPresetReminderForm = isset($options[self::PREDEFINED_REMINDER_OPTION_NAME])
                                    && $options[self::PREDEFINED_REMINDER_OPTION_NAME];
 
-      echo "<form name='form' method='post' action='" . Toolbox::getItemTypeFormURL(self::getType()) . "'>";
-
-      echo "<div align='center'><table class='tab_cadre_fixe'>";
-
-      echo "<tr>";
-      if ($displayPresetReminderForm) {
-         echo "<th colspan='4'>" . __('Choose a predefined reminder', 'satisfaction') . "</th>";
-      } else {
-         echo "<th colspan='4'>" . __('Add a reminder', 'satisfaction') . "</th>";
-      }
-
-      echo "</tr>";
-
-      if ($displayPresetReminderForm) {
-
-         echo "<tr class='tab_bg_1' rowspan='10'>";
-
-         echo "<td>" . __('Predefined Reminders', "satisfaction") . "</td>";
-         echo "<td>" . self::getPresetReminderDropdown(self::PREDEFINED_REMINDER_OPTION_NAME) . "</td>";
-         echo "</tr>";
-
-      } else {
-         echo "<tr class='tab_bg_1'>";
-
-         // Name line 1
-         echo "<td>" . self::getColumnTitles(self::COLUMN_NAME) . "</td>";
-         echo "<td><textarea name='" . self::COLUMN_NAME . "' cols='50' rows='4'>";
-         echo $surveyReminder->fields["name"] . "</textarea></td>";
-
-         echo "<input type='hidden' name='" . self::$items_id . "' value='" . $surveyReminder->fields[self::$items_id] . "'>";
-
-         // Comment line 1
-         echo "<td rowspan='2'>" . self::getColumnTitles(self::COLUMN_COMMENT) . "</td>";
-         echo "<td rowspan='2'>";
-         echo "<textarea cols='60' rows='6' name='" . self::COLUMN_COMMENT . "' >" . $surveyReminder->fields[self::COLUMN_COMMENT] . "</textarea>";
-         echo "</td>";
-
-         echo "</tr>";
-
-         // Duration type line 2
-         echo "<tr class='tab_bg_1'>";
-         echo "<td>" . self::getColumnTitles(self::COLUMN_DURATION_TYPE) . "</td>";
-         echo "<td>" . self::getDurationDropdown(self::COLUMN_DURATION_TYPE, $surveyReminder->fields[self::COLUMN_DURATION_TYPE]) . "</td>";
-         echo "</tr>";
-
-         // Duration line 3
-         echo "<tr class='tab_bg_1'>";
-         echo "<td>" . self::getColumnTitles(self::COLUMN_DURATION) . "</td>";
-         echo "<td colspan='3'>";
-         Dropdown::showNumber(self::COLUMN_DURATION, ['value' => $surveyReminder->fields[self::COLUMN_DURATION],
-                                                      'min'   => 1,
-                                                      'max'   => 365]);
-         echo "</td>";
-         echo "</tr>";
-
-         // Active line 4
-         echo "<tr class='tab_bg_1'>";
-         echo "<td>" . self::getColumnTitles(self::COLUMN_IS_ACTIVE) . "</td>";
-         echo "<td>";
-         Dropdown::showYesNo(self::COLUMN_IS_ACTIVE, $surveyReminder->fields[self::COLUMN_IS_ACTIVE]);
-         echo "</td><td colspan='2'></td></tr>";
-      }
-
-      echo "<tr>";
-      echo "<td class='tab_bg_2 center' colspan='4'>";
-      if ($ID <= 0) {
-         echo Html::hidden(self::$items_id, ['value' => $survey->getField('id')]);
-         echo "<input type='submit' name='add' class='submit' value='" . _sx('button', 'Add') . "' >";
-      } else {
-         echo Html::hidden('id', ['value' => $ID]);
-         echo "<input type='submit' name='update' class='submit' value='" . _sx('button', 'Save') . "' >";
-      }
-      echo "</td>";
-      echo "</tr>";
-
-      echo "</table>";
-
-      Html::closeForm();
+      $form = [
+         'action'  => Toolbox::getItemTypeFormURL(self::getType()),
+         'itemtype' => $this->getType(),
+         'content' => [
+            $displayPresetReminderForm
+                ? __('Choose a predefined reminder', 'satisfaction')
+                : __('Add a reminder', 'satisfaction') => [
+                'visible' => true,
+                'inputs' => $displayPresetReminderForm ? [
+                    __('Predefined Reminders', "satisfaction") => [
+                        'type'  => 'select',
+                        'name'  => self::PREDEFINED_REMINDER_OPTION_NAME,
+                        'values' => $this->getPresetReminderTitles(),
+                        'value' => $surveyReminder->fields[self::PREDEFINED_REMINDER_OPTION_NAME] ?? null,
+                        'col_lg' => 12,
+                        'col_md' => 12,
+                    ]
+                ] : [
+                    __('Name') => [
+                        'type'  => 'textarea',
+                        'name'  => self::COLUMN_NAME,
+                        'value' => $surveyReminder->fields[self::COLUMN_NAME] ?? null,
+                        'col_lg' => 6,
+                    ],
+                    __('Comments') => [
+                        'type'  => 'textarea',
+                        'name'  => self::COLUMN_COMMENT,
+                        'value' => $surveyReminder->fields[self::COLUMN_COMMENT] ?? null,
+                        'col_lg' => 6,
+                    ],
+                    __('Duration') => [
+                        'type'  => 'number',
+                        'name'  => self::COLUMN_DURATION,
+                        'value' => $surveyReminder->fields[self::COLUMN_DURATION] ?? null,
+                        'min'   => 1,
+                        'max'   => 365,
+                    ],
+                    __('Duration Type') => [
+                        'type'  => 'select',
+                        'name'  => self::COLUMN_DURATION_TYPE,
+                        'values' => $this->getDurationTitles(),
+                        'value' => $surveyReminder->fields[self::COLUMN_DURATION_TYPE] ?? null,
+                    ],
+                    __('Active') => [
+                        'type'  => 'checkbox',
+                        'name'  => self::COLUMN_IS_ACTIVE,
+                        'value' => $surveyReminder->fields[self::COLUMN_IS_ACTIVE] ?? null,
+                    ],
+                    $ID <= 0 ? [
+                        'type'  => 'hidden',
+                        'name'  => self::$items_id,
+                        'value' => $survey->getField('id'),
+                    ] : [
+                        'type'  => 'hidden',
+                        'name'  => 'id',
+                        'value' => $ID,
+                    ],
+                ],
+            ]
+         ]
+      ];
+      renderTwigForm($form, '', $surveyReminder->fields);
    }
 
    /**
